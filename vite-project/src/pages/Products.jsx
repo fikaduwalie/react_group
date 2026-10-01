@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import { fetchProducts } from "../services/ProductService";
 
 
 export default function Products() {
@@ -13,20 +14,14 @@ export default function Products() {
   useEffect(() => {
      async  function getProducts(){
       try {
-        const response = await fetch('/api/products');
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-
-        const data = await response.json();
+        const data = await fetchProducts();
 
         setProducts(data);
         // Extract unique categories for filter dropdown
         const uniqueCategories = Array.from(new Set(data.map(p => p.category)));
         setCategories(['All', ...uniqueCategories]);
       } catch (error) {
-        setError("unable to load products");
+        setError(error.message || "Unable to load products");
       } finally {
         setLoading(false);
       }
